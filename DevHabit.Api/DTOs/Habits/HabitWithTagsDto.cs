@@ -2,7 +2,7 @@ using DevHabit.Api.Entities;
 
 namespace DevHabit.Api.DTOs.Habits;
 
-public sealed record HabitDto
+public sealed record HabitWithTagsDto
 {
     public required string Id { get; init; }
 
@@ -18,4 +18,5 @@ public sealed record HabitDto
     public required DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; init; }
     public DateTime? LastCompletedAtUtc { get; init; }
+    public required ICollection<string> Tags { get; init; } = [];
 }

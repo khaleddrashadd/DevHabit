@@ -41,21 +41,23 @@ public static class HabitMappings
     public static HabitDto ToDto(this Habit habit)
     {
         return new HabitDto
-        (
-            habit.Id,
-            habit.Name,
-            habit.Description,
-            habit.Type,
-            new FrequencyDto(habit.Frequency.Type, habit.Frequency.TimePerPeriod),
-            new TargetDto(habit.Target.Value, habit.Target.Unit),
-            habit.Status,
-            habit.IsArchived,
-            habit.EndDate,
-            habit.Milestone is not null ? new MilestoneDto(habit.Milestone.Current, habit.Milestone.Target) : null,
-            habit.CreatedAtUtc,
-            habit.UpdatedAtUtc,
-            habit.LastCompletedAtUtc
-        );
+        {
+            Id = habit.Id,
+            Name = habit.Name,
+            Description = habit.Description,
+            Type = habit.Type,
+            Frequency = new FrequencyDto(habit.Frequency.Type, habit.Frequency.TimePerPeriod),
+            Target = new TargetDto(habit.Target.Value, habit.Target.Unit),
+            Status = habit.Status,
+            IsArchived = habit.IsArchived,
+            EndDate = habit.EndDate,
+            Milestone = habit.Milestone is not null
+                ? new MilestoneDto(habit.Milestone.Current, habit.Milestone.Target)
+                : null,
+            CreatedAtUtc = habit.CreatedAtUtc,
+            UpdatedAtUtc = habit.UpdatedAtUtc,
+            LastCompletedAtUtc = habit.LastCompletedAtUtc
+        };
     }
 
     public static void UpdateFromDto(this Habit habit, UpdateHabitDto dto)

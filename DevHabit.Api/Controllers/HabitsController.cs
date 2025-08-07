@@ -25,13 +25,13 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
     }
 
     [HttpGet("{Id}")]
-    public async Task<ActionResult<HabitDto?>> GetHabit([FromRoute] string id)
+    public async Task<ActionResult<HabitWithTagsDto?>> GetHabit([FromRoute] string id)
     {
-        var habit = await dbContext.Habits.Where(h => h.Id == id).Select(HabitQueries.ProjectToDto())
+        var habitDto = await dbContext.Habits.Where(h => h.Id == id).Select(HabitQueries.ProjectWithTagsToDto())
             .FirstOrDefaultAsync();
-        if (habit is null) return NotFound();
+        if (habitDto is null) return NotFound();
 
-        return Ok(habit);
+        return Ok(habitDto);
     }
 
     [HttpPost]

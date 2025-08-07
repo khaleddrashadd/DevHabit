@@ -23,5 +23,13 @@ public class HabitConfiguration : IEntityTypeConfiguration<Habit>
         builder.OwnsOne(h => h.Milestone);
 
         builder.OwnsOne(h => h.Target, target => { target.Property(t => t.Unit).HasMaxLength(100); });
+
+        builder.HasMany(h => h.Tags).WithMany(t => t.Habits).UsingEntity<HabitTag>();
+
+        // builder.HasMany(h => h.Tags).WithMany(t => t.Habits).UsingEntity<HabitTag>(
+        //     r => r.HasOne(ht => ht.Tag).WithMany(t => t.HabitTags).HasForeignKey(h => h.TagId)
+        //     ,
+        //     (l) => l.HasOne(ht => ht.Habit).WithMany(h => h.HabitTags).HasForeignKey(h => h.HabitId)
+        // );
     }
 }
