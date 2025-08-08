@@ -26,7 +26,7 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
         return Ok(habitsCollection);
     }
 
-    [HttpGet("{Id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<HabitWithTagsDto?>> GetHabit([FromRoute] string id)
     {
         var habitDto = await dbContext.Habits.Where(h => h.Id == id).Select(HabitQueries.ProjectWithTagsToDto())
@@ -40,17 +40,11 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
     public async Task<ActionResult<HabitDto?>> CreateHabit([FromBody] CreateHabitDto request,
         IValidator<CreateHabitDto> validator, ProblemDetailsFactory problemDetailsFactory)
     {
-        var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            // return 422 Unprocessable Entity with validation errors
-            var problem = problemDetailsFactory.CreateProblemDetails(
-                HttpContext,
-                StatusCodes.Status422UnprocessableEntity
-            );
-            problem.Extensions.Add("errors", validationResult.ToDictionary());
-            return BadRequest(problem);
-        }
+        // var validationResult = await validator.ValidateAsync(request);
+        // this will throw an exception if validation fails
+
+        // and will be handled (caught) by the ValidationExceptionHandler middleware
+        await validator.ValidateAndThrowAsync(request);
 
         var habit = request.ToEntity();
         await dbContext.Habits.AddAsync(habit);

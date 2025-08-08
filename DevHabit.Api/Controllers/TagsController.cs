@@ -60,7 +60,6 @@ public sealed class TagsController(ApplicationDbContext dbContext) : ControllerB
         }
 
         var tag = createTagDto.ToEntity();
-
         if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
             return Problem(
                 $"The tag '{tag.Name}' already exists",
