@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace DevHabit.Api.Services.Sorting;
+namespace DevHabit.Api.Services.Sort;
 
 public class SortableService<T> : ISortableService<T> where T : class
 {

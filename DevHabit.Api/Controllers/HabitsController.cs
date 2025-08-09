@@ -2,7 +2,7 @@ using DevHabit.Api.Database;
 using DevHabit.Api.DTOs;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
-using DevHabit.Api.Services.Sorting;
+using DevHabit.Api.Services.Sort;
 using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

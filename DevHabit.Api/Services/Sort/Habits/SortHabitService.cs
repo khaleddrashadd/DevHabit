@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using DevHabit.Api.Entities;
 
-namespace DevHabit.Api.Services.Sorting;
+namespace DevHabit.Api.Services.Sort.Habits;
 
 public class SortHabitService : SortableService<Habit>
 {

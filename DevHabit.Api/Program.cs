@@ -1,7 +1,8 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Middleware;
-using DevHabit.Api.Services.Sorting;
+using DevHabit.Api.Services.Sort;
+using DevHabit.Api.Services.Sort.Habits;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;

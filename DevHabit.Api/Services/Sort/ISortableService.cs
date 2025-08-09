@@ -1,4 +1,4 @@
-namespace DevHabit.Api.Services.Sorting;
+namespace DevHabit.Api.Services.Sort;
 
 public interface ISortableService<T> where T : class
 {
