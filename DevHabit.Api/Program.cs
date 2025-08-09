@@ -1,5 +1,7 @@
 using DevHabit.Api.Database;
+using DevHabit.Api.Entities;
 using DevHabit.Api.Middleware;
+using DevHabit.Api.Services.Sorting;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -17,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         sqlserverOption =>
             sqlserverOption.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Application))
 );
+builder.Services.AddSingleton<ISortableService<Habit>, SortHabitService>();
 // it must be that global exception be the last one added
 builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
