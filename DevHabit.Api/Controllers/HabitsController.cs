@@ -1,5 +1,6 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs;
+using DevHabit.Api.DTOs.Common;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services.Sort;
@@ -16,26 +17,21 @@ namespace DevHabit.Api.Controllers;
 public sealed class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<HabitsCollectionDto>> GetHabits(
+    public async Task<ActionResult<PaginationResult<HabitDto>>> GetHabits(
         [FromQuery] HabitQueryParamsDto habitQueryParamsDto, ISortableService<Habit> sortHabitService)
     {
-        var (search, type, status, sort) = habitQueryParamsDto;
+        var (search, type, status, sort, page, pageSize, fields) = habitQueryParamsDto;
         search = search.ToLower();
-        IQueryable<Habit> query = dbContext.Habits;
-        //search filter
-        query = query.Where(h =>
-            h.Name.ToLower().Contains(search) || (h.Description !=
-                null && h.Description.ToLower().Contains(search)));
-        // type and status filters
-        query = query.Where(h => type == null || h.Type == type).Where(h => status == null || h.Status == status);
-        // sorting
-        query = sortHabitService.ApplySorting(query, sort);
-        var habits = await query.Select(HabitQueries.ProjectToDto()).ToListAsync();
+        var query = dbContext.Habits.Where(h =>
+                h.Name.ToLower().Contains(search) || (h.Description !=
+                    null && h.Description.ToLower().Contains(search))).Where(h => type == null || h.Type == type)
+            .Where(h => status == null || h.Status == status);
 
-        var habitsCollection = new HabitsCollectionDto
-        {
-            Items = habits
-        };
+        var projectedQuery = sortHabitService.ApplySorting(query, sort).Select(HabitQueries.ProjectToDto());
+
+
+        var habitsCollection = await PaginationResult<HabitDto>.CreateAsync(projectedQuery, page, pageSize);
+
 
         return Ok(habitsCollection);
     }

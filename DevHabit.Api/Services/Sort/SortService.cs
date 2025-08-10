@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using DevHabit.Api.Exceptions;
 
 namespace DevHabit.Api.Services.Sort;
 
@@ -35,7 +36,10 @@ public class SortableService<T> : ISortableService<T> where T : class
         {
             //check if the fieldName exists in the 
             //sort expressions are filled by the derived class
-            if (!_sortExpressions.TryGetValue(fieldName, out var expression)) continue;
+            if (!_sortExpressions.TryGetValue(fieldName, out var expression))
+                throw new InvalidSortFieldException(
+                    $"Invalid sort field: '{fieldName}'. Allowed fields: {string.Join(", ", _sortExpressions.Keys)}");
+            ;
             if (isFirst)
                 orderedQuery = isDesc
                     ? query.OrderByDescending(expression)
