@@ -24,6 +24,9 @@ public class HabitConfiguration : IEntityTypeConfiguration<Habit>
 
         builder.OwnsOne(h => h.Target, target => { target.Property(t => t.Unit).HasMaxLength(100); });
 
+        builder.HasOne<User>().WithMany().HasForeignKey(h => h.UserId);
+        builder.Property(h => h.UserId).HasMaxLength(500);
+
         builder.HasMany(h => h.Tags).WithMany(t => t.Habits).UsingEntity<HabitTag>();
 
         // builder.HasMany(h => h.Tags).WithMany(t => t.Habits).UsingEntity<HabitTag>(

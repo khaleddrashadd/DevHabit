@@ -1,4 +1,5 @@
 using DevHabit.Api;
+using DevHabit.Api.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ if (app.Environment.IsDevelopment())
     //app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+    await app.SeedRoles();
 }
 
 app.UseHttpsRedirection();

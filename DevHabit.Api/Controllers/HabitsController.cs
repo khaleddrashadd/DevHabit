@@ -3,6 +3,7 @@ using DevHabit.Api.DTOs;
 using DevHabit.Api.DTOs.Common;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Services;
 using DevHabit.Api.Services.Sort;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -15,16 +16,19 @@ namespace DevHabit.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
-public sealed class HabitsController(ApplicationDbContext dbContext) : ControllerBase
+[Authorize(Roles = Roles.Member)]
+public sealed class HabitsController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
 {
     [HttpGet]
+    [Authorize(Roles = Roles.Member)]
     public async Task<ActionResult<PaginationResult<HabitDto>>> GetHabits(
         [FromQuery] HabitQueryParamsDto habitQueryParamsDto, ISortableService<Habit> sortHabitService)
     {
+        var userId = await userContext.GetUserAsync();
+        if (userId is null) return Unauthorized();
         var (search, type, status, sort, page, pageSize, fields) = habitQueryParamsDto;
         search = search.ToLower();
-        var query = dbContext.Habits.Where(h =>
+        var query = dbContext.Habits.Where(h => h.UserId == userId).Where(h =>
                 h.Name.ToLower().Contains(search) || (h.Description !=
                     null && h.Description.ToLower().Contains(search))).Where(h => type == null || h.Type == type)
             .Where(h => status == null || h.Status == status);
@@ -39,9 +43,13 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<HabitWithTagsDto?>> GetHabit([FromRoute] string id)
     {
-        var habitDto = await dbContext.Habits.Where(h => h.Id == id).Select(HabitQueries.ProjectWithTagsToDto())
+        var userId = await userContext.GetUserAsync();
+        if (userId is null) return Unauthorized();
+        var habitDto = await dbContext.Habits.Where(h => h.Id == id && h.UserId == userId)
+            .Select(HabitQueries.ProjectWithTagsToDto())
             .FirstOrDefaultAsync();
         if (habitDto is null) return NotFound();
 
@@ -56,9 +64,11 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
         // this will throw an exception if validation fails
 
         // and will be handled (caught) by the ValidationExceptionHandler middleware
+        var userId = await userContext.GetUserAsync();
+        if (userId is null) return Unauthorized();
         await validator.ValidateAndThrowAsync(request);
 
-        var habit = request.ToEntity();
+        var habit = request.ToEntity(userId);
         await dbContext.Habits.AddAsync(habit);
         await dbContext.SaveChangesAsync();
 
@@ -69,7 +79,9 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
     [HttpPut]
     public async Task<ActionResult<HabitDto?>> UpdateHabit([FromBody] UpdateHabitDto request)
     {
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == request.Id);
+        var userId = await userContext.GetUserAsync();
+        if (userId is null) return Unauthorized();
+        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == request.Id && h.UserId == userId);
 
         if (habit is null) return NotFound();
         habit.UpdateFromDto(request);
@@ -82,7 +94,9 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
     public async Task<ActionResult<HabitDto?>> PatchHabit(
         [FromRoute] string id, [FromBody] JsonPatchDocument<HabitDto> patchDocument)
     {
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
+        var userId = await userContext.GetUserAsync();
+        if (userId is null) return Unauthorized();
+        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id && h.UserId == userId);
 
         if (habit is null) return NotFound();
 
@@ -104,10 +118,13 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.Member)]
     public async Task<ActionResult<HabitDto?>> DeleteHabit(
         [FromRoute] string id)
     {
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
+        var userId = await userContext.GetUserAsync();
+        if (userId is null) return Unauthorized();
+        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id && h.UserId == userId);
 
         if (habit is null) return NotFound();
 

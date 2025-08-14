@@ -16,7 +16,8 @@ public sealed class ApplicationIdentityDbContext(DbContextOptions<ApplicationIde
         modelBuilder.Entity<RefreshToken>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.UserId).HasMaxLength(300);
+            entity.Property(e => e.UserId).HasMaxLength(450)
+                .IsRequired();
             entity.Property(e => e.Token).HasMaxLength(1000);
             //we prevent two users from having the same refresh token
             entity.HasIndex(e => e.Token).IsUnique();

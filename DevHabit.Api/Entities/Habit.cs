@@ -3,6 +3,7 @@ namespace DevHabit.Api.Entities;
 public sealed class Habit
 {
     public required string Id { get; init; }
+    public required string UserId { get; set; }
     public required string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public required HabitType Type { get; set; }

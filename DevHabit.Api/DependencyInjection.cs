@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace DevHabit.Api;
 
@@ -54,8 +55,37 @@ public static class DependencyInjection
         builder.Services.AddValidatorsFromAssemblyContaining<Program>();
         builder.Services.AddSingleton<ISortableService<Habit>, SortHabitService>();
         builder.Services.AddTransient<TokenProvider>();
+        builder.Services.AddMemoryCache();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<UserContext>();
 
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer 12345abcdef"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            }
+        );
         return builder;
     }
 

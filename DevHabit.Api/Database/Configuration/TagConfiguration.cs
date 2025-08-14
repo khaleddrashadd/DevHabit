@@ -8,10 +8,12 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
 {
     public void Configure(EntityTypeBuilder<Tag> builder)
     {
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasMaxLength(500);
-        builder.Property(x => x.Name).HasMaxLength(50);
-        builder.Property(x => x.Description).HasMaxLength(500);
-        builder.HasIndex(x => x.Name).IsUnique();
+        builder.HasOne<User>().WithMany().HasForeignKey(h => h.UserId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasKey(t => t.Id);
+        builder.Property(t => t.Id).HasMaxLength(500);
+        builder.Property(t => t.Name).HasMaxLength(50);
+        builder.Property(t => t.Description).HasMaxLength(500);
+        builder.Property(t => t.UserId).HasMaxLength(500);
+        builder.HasIndex(t => new { t.Name, t.UserId }).IsUnique();
     }
 }

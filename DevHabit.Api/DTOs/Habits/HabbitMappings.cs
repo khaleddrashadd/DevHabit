@@ -4,7 +4,7 @@ namespace DevHabit.Api.DTOs.Habits;
 
 public static class HabitMappings
 {
-    public static Habit ToEntity(this CreateHabitDto dto)
+    public static Habit ToEntity(this CreateHabitDto dto, string userId)
     {
         Habit habit = new()
         {
@@ -32,7 +32,8 @@ public static class HabitMappings
                     Current = 0,
                     Target = dto.Milestone.Target
                 }
-                : null
+                : null,
+            UserId = userId
         };
 
         return habit;
