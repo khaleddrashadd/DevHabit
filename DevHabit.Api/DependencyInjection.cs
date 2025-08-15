@@ -59,6 +59,7 @@ public static class DependencyInjection
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<UserContext>();
 
+
         builder.Services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -86,6 +87,8 @@ public static class DependencyInjection
                 });
             }
         );
+        //add caching header
+        builder.Services.AddResponseCaching();
         return builder;
     }
 

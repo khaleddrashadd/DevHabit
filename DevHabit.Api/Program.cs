@@ -1,5 +1,5 @@
 using DevHabit.Api;
-using DevHabit.Api.Exceptions;
+using DevHabit.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +25,8 @@ app.UseHttpsRedirection();
 //ther order of these middlewares is important 
 app.UseAuthentication();
 app.UseAuthorization();
+// use caching header middleware (this after using:  builder.Services.AddResponseCaching();) 
+app.UseResponseCaching();
 
 app.UseExceptionHandler();
 

@@ -1,7 +1,7 @@
 using DevHabit.Api.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace DevHabit.Api.Exceptions;
+namespace DevHabit.Api.Extensions;
 
 public static class DatabaseExtensions
 {

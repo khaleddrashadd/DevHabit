@@ -17,6 +17,7 @@ namespace DevHabit.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = Roles.Member)]
+[ResponseCache(Duration = 120)]
 public sealed class HabitsController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
 {
     [HttpGet]
